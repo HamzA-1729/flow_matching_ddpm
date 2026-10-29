@@ -1,0 +1,48 @@
+# ==============================================================================
+# Experiment Configuration: MNIST with Patch Diffusion Transformer (DiT)
+# ==============================================================================
+# Shared configuration for both DDPM and Flow Matching training & evaluation.
+
+# Fixed seed for deterministic batching, weight initialization, and sampling
+seed: 42
+
+# Dataset Specifications
+dataset:
+  name: "mnist"
+  img_size: 28              # Spatial resolution (28x28)
+  in_channels: 1            # Grayscale channel count
+  num_classes: 10           # Digits 0 through 9
+
+# Architecture Specifications (DiT with AdaLN-Zero)
+model:
+  patch_size: 4             # 28 / 4 = 7x7 = 49 visual tokens
+  hidden_dim: 128           # Transformer embedding dimension
+  depth: 4                  # Number of AdaLN-Zero Transformer blocks
+  num_heads: 4              # Attention heads (128 / 4 = 32 per head)
+  mlp_ratio: 4.0            # MLP hidden expansion (128 * 4.0 = 512)
+  time_scale: 1000.0        # Scales continuous t in [0, 1] to match DDPM frequency scale
+
+# Training & Optimization Protocol
+training:
+  batch_size: 64            # Fits comfortably in CPU cache and RAM
+  epochs: 10                # Sufficient for sharp digit generation on MNIST
+  lr: 3.0e-4                # Peak learning rate after warmup
+  min_lr: 1.0e-6            # Minimum learning rate after cosine decay
+  warmup_steps: 250         # Number of linear warmup steps
+  weight_decay: 0.01        # AdamW decoupled weight decay
+  grad_clip: 1.0            # Global gradient L2-norm clipping threshold
+  ema_decay: 0.999          # Exponential Moving Average rate for sampling weights
+  label_dropout: 0.10       # Probability of dropping label y to null token (for CFG)
+
+# DDPM Schedule Parameters
+ddpm:
+  timesteps: 1000           # Full discrete forward schedule
+  beta_start: 1.0e-4        # Initial noise level beta_1
+  beta_end: 0.02            # Final noise level beta_T
+
+# Comparative Evaluation & Sampler Settings
+sampling:
+  nfe_list: [5, 10, 20, 50, 100]  # Number of Function Evaluations to benchmark
+  cfg_scale: 2.0                  # Classifier-Free Guidance strength (w)
+  num_samples_per_class: 1        # Samples generated per digit class (0-9)
+
