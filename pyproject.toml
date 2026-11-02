@@ -1,7 +1,7 @@
 [project]
 name = "flow-matching-ddpm"
 version = "0.1.0"
-description = "Add your description here"
+description = "Continuous-Time Flow Matching vs. DDPM Image Generation from Scratch in PyTorch with a DiT Backbone"
 readme = "README.md"
 authors = [
     { name = "Hamza Sajid", email = "hamzasajid.1729@gmail.com" }
