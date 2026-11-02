@@ -12,7 +12,7 @@ Architecture features:
 """
 
 import math
-from typing import Optional, Tuple
+
 import torch
 import torch.nn as nn
 
@@ -104,7 +104,9 @@ class PatchEmbed(nn.Module):
 
     def __init__(self, img_size: int, patch_size: int, in_channels: int, hidden_dim: int):
         super().__init__()
-        assert img_size % patch_size == 0, f"img_size {img_size} must be divisible by patch_size {patch_size}"
+        assert img_size % patch_size == 0, (
+            f"img_size {img_size} must be divisible by patch_size {patch_size}"
+        )
         self.img_size = img_size
         self.patch_size = patch_size
         self.grid_size = img_size // patch_size
@@ -151,7 +153,6 @@ class AdaLNZeroBlock(nn.Module):
         super().__init__()
         self.hidden_dim = hidden_dim
         self.num_heads = num_heads
-        head_dim = hidden_dim // num_heads
 
         # Normalization with elementwise_affine=False because AdaLN supplies gamma & beta
         self.norm1 = nn.LayerNorm(hidden_dim, elementwise_affine=False, eps=1e-6)
@@ -300,9 +301,9 @@ class DiT(nn.Module):
         self.y_embedder = nn.Embedding(num_classes + 1, hidden_dim)
 
         # 4. AdaLN-Zero Transformer Blocks
-        self.blocks = nn.ModuleList([
-            AdaLNZeroBlock(hidden_dim, num_heads, mlp_ratio) for _ in range(depth)
-        ])
+        self.blocks = nn.ModuleList(
+            [AdaLNZeroBlock(hidden_dim, num_heads, mlp_ratio) for _ in range(depth)]
+        )
 
         # 5. Final output layer
         self.final_layer = FinalLayer(hidden_dim, patch_size, self.out_channels)
@@ -333,7 +334,7 @@ class DiT(nn.Module):
         self,
         x: torch.Tensor,
         t: torch.Tensor,
-        y: Optional[torch.Tensor] = None,
+        y: torch.Tensor | None = None,
     ) -> torch.Tensor:
         """
         Forward pass for either DDPM (predicting noise) or Flow Matching (predicting velocity).
@@ -372,7 +373,6 @@ class DiT(nn.Module):
 
         # 5. Modulated projection and unpatchify back to image
         out_tokens = self.final_layer(tokens, c)  # (B, N, p*p*C)
-        out_img = self.unpatchify(out_tokens)    # (B, C, H, W)
+        out_img = self.unpatchify(out_tokens)  # (B, C, H, W)
 
         return out_img
-

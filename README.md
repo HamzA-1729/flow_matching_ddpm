@@ -1,11 +1,24 @@
 # Flow Matching vs DDPM: Image Generation from Scratch (DiT Backbone)
 
 [![Python 3.12+](https://img.shields.io/badge/python-3.12%2B-blue.svg)](https://www.python.org/)
-[![PyTorch 2.5+](https://img.shields.io/badge/PyTorch-2.5%2B-EE4C2C.svg)](https://pytorch.org/)
+[![PyTorch 2.14+](https://img.shields.io/badge/PyTorch-2.14%2B-EE4C2C.svg)](https://pytorch.org/)
 [![Package Manager: uv](https://img.shields.io/badge/managed%20by-uv-DE5FE9.svg)](https://github.com/astral-sh/uv)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+![Status: WIP](https://img.shields.io/badge/status-work%20in%20progress-orange.svg)
 
 *A clean, first-principles implementation and comparative evaluation of Continuous-Time Optimal Transport Flow Matching against Denoising Diffusion Probabilistic Models (DDPM) using a shared Patch Diffusion Transformer (DiT) backbone.*
+
+> **Status: work in progress.** The DiT backbone and its tests are done. Losses, samplers, training and benchmarks are being built; sections marked *(planned)* describe the target design, not code that runs today.
+
+## Roadmap
+
+- [x] DiT backbone with AdaLN-Zero, 2D sin-cos positions, null-token CFG (`model.py`)
+- [x] Shape, identity-init and single-batch overfit tests
+- [ ] Flow Matching and DDPM losses (`loss.py`)
+- [ ] Euler, Heun, DDIM and respaced ancestral samplers (`sampler.py`)
+- [ ] MNIST data pipeline and training loop with EMA (`dataset.py`, `train.py`)
+- [ ] NFE benchmark: 5 / 10 / 20 / 50 / 100 NFE comparison grid
+- [ ] CIFAR-10 config and results
 
 ---
 
@@ -136,17 +149,17 @@ Unpatchify ──► Output Tensor: (B, C, H, W)
 flow_matching_ddpm/
 ├── README.md                      # Mathematical specification & findings log
 ├── pyproject.toml                 # uv package configuration
+├── .github/workflows/ci.yml       # ruff + pytest on every push/PR
 ├── configs/
-│   ├── mnist_dit.yaml             # Reproducible MNIST benchmark configuration
-│   └── cifar_dit.yaml             # Scaled CIFAR-10 configuration
+│   └── mnist_dit.yaml             # Reproducible MNIST benchmark configuration
 ├── src/flow_matching_ddpm/
 │   ├── __init__.py
 │   ├── model.py                   # DiT backbone, PatchEmbed, AdaLNZeroBlock
-│   ├── loss.py                    # DDPMLoss and FlowMatchingLoss
-│   ├── sampler.py                 # Ancestral, DDIM, Euler, and Heun samplers
-│   ├── dataset.py                 # MNIST/CIFAR-10 normalization [-1, 1]
-│   ├── train.py                   # Training loop, EMA tracking, grad clipping
-│   └── utils.py                   # Seeding, visual grid exporter, classifier evaluator
+│   ├── loss.py                    # (planned) DDPMLoss and FlowMatchingLoss
+│   ├── sampler.py                 # (planned) Ancestral, DDIM, Euler, and Heun samplers
+│   ├── dataset.py                 # (planned) MNIST/CIFAR-10 normalization [-1, 1]
+│   ├── train.py                   # (planned) Training loop, EMA tracking, grad clipping
+│   └── utils.py                   # (planned) Seeding, visual grid exporter, classifier evaluator
 └── tests/
     ├── __init__.py
     ├── test_shapes.py             # Reversibility, tensor shapes, AdaLN-Zero identity check
@@ -157,38 +170,49 @@ flow_matching_ddpm/
 
 ## 5. Quickstart & Reproducibility
 
-### 5.1. Run Core Unit Tests
+### 5.1. Install
 ```bash
-# Verify tensor shapes, patch unpatchify, and AdaLN-Zero identity initialization
-uv run pytest tests/test_shapes.py -v
-
-# Run 1-batch overfit test (loss must drop by >90% within 100 steps on CPU)
-uv run pytest tests/test_overfit.py -v
+git clone <repo-url> && cd flow_matching_ddpm
+uv sync
 ```
 
-### 5.2. Training
+### 5.2. Run the tests
 ```bash
-# Train Flow Matching on MNIST
+uv run pytest -v          # shapes, AdaLN-Zero identity init, single-batch overfit
+uv run ruff check .       # lint
+```
+
+### 5.3. Training and benchmarking *(planned)*
+```bash
 uv run python -m flow_matching_ddpm.train --mode flow --config configs/mnist_dit.yaml
-
-# Train DDPM on MNIST
 uv run python -m flow_matching_ddpm.train --mode ddpm --config configs/mnist_dit.yaml
-```
-
-### 5.3. Benchmark & Comparative Grid
-```bash
-# Generate side-by-side NFE comparison grid (5, 10, 20, 50, 100 NFE)
 uv run python -m flow_matching_ddpm.sampler --config configs/mnist_dit.yaml
 ```
 
 ---
 
-## 6. Engineering Log & Known Limitations
+## 6. Results *(planned)*
 
-*(This section is updated dynamically throughout development)*
+Sample grids and NFE-vs-quality comparison (Flow Matching vs DDPM/DDIM at 5-100 NFE) will be added here once training is complete.
 
-* **Milestone 1:** Repository scaffolded with `uv`, isolated dependencies, and mathematical specification committed.
-* **Limitations:**
-  1. The straight-line OT path is conditioned per-pair $(x_{\text{noise}}, x_{\text{data}})$; the marginal path remains non-linear, which is why 1-step generation requires distillation.
-  2. Ancestral DDPM requires timestep respacing to remain mathematically coherent at low step counts ($N < 50$).
+---
 
+## 7. Known Limitations
+
+1. The straight-line OT path is conditioned per-pair $(x_{\text{noise}}, x_{\text{data}})$; the marginal path remains non-linear, which is why 1-step generation requires distillation.
+2. Ancestral DDPM requires timestep respacing to remain mathematically coherent at low step counts ($N < 50$).
+
+---
+
+## 8. References
+
+1. Lipman et al., *Flow Matching for Generative Modeling*, ICLR 2023.
+2. Ho et al., *Denoising Diffusion Probabilistic Models*, NeurIPS 2020.
+3. Song et al., *Denoising Diffusion Implicit Models*, ICLR 2021.
+4. Nichol & Dhariwal, *Improved Denoising Diffusion Probabilistic Models*, ICML 2021.
+5. Peebles & Xie, *Scalable Diffusion Models with Transformers (DiT)*, ICCV 2023.
+6. Ho & Salimans, *Classifier-Free Diffusion Guidance*, 2022.
+
+## 9. License & Citation
+
+Released under the [MIT License](LICENSE). If you use this work, see [CITATION.cff](CITATION.cff). Contributions: see [CONTRIBUTING.md](CONTRIBUTING.md).

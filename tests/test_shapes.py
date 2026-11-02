@@ -6,9 +6,9 @@ Unit tests for the Patch Diffusion Transformer (DiT) backbone:
 4. Class conditioning and null token handling (CFG).
 """
 
-import pytest
 import torch
-from flow_matching_ddpm.model import DiT, AdaLNZeroBlock, PatchEmbed
+
+from flow_matching_ddpm.model import AdaLNZeroBlock, DiT
 
 
 def test_adaln_zero_identity_init():
@@ -31,7 +31,9 @@ def test_adaln_zero_identity_init():
         out = block(x, c)
 
     # Must be identical within floating point tolerance
-    assert torch.allclose(out, x, atol=1e-6), "AdaLN-Zero block is not an exact identity at initialization!"
+    assert torch.allclose(out, x, atol=1e-6), (
+        "AdaLN-Zero block is not an exact identity at initialization!"
+    )
 
 
 def test_dit_forward_shapes():
@@ -87,4 +89,3 @@ def test_unpatchify_reconstruction():
 
     imgs = model.unpatchify(dummy_tokens)
     assert imgs.shape == (b, c, 28, 28)
-
