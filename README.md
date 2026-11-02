@@ -1,5 +1,6 @@
 # Flow Matching vs DDPM: Image Generation from Scratch (DiT Backbone)
 
+[![CI](https://github.com/HamzA-1729/flow_matching_ddpm/actions/workflows/ci.yml/badge.svg)](https://github.com/HamzA-1729/flow_matching_ddpm/actions)
 [![Python 3.12+](https://img.shields.io/badge/python-3.12%2B-blue.svg)](https://www.python.org/)
 [![PyTorch 2.14+](https://img.shields.io/badge/PyTorch-2.14%2B-EE4C2C.svg)](https://pytorch.org/)
 [![Package Manager: uv](https://img.shields.io/badge/managed%20by-uv-DE5FE9.svg)](https://github.com/astral-sh/uv)
@@ -172,7 +173,7 @@ flow_matching_ddpm/
 
 ### 5.1. Install
 ```bash
-git clone <repo-url> && cd flow_matching_ddpm
+git clone https://github.com/HamzA-1729/flow_matching_ddpm.git && cd flow_matching_ddpm
 uv sync
 ```
 

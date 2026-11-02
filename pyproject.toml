@@ -25,6 +25,10 @@ dependencies = [
     "tqdm>=4.70.1",
 ]
 
+[project.urls]
+Homepage = "https://github.com/HamzA-1729/flow_matching_ddpm"
+Issues = "https://github.com/HamzA-1729/flow_matching_ddpm/issues"
+
 [build-system]
 requires = ["uv_build>=0.12.17,<0.13.0"]
 build-backend = "uv_build"
