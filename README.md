@@ -31,6 +31,10 @@
 
 ## 🔬 Core Findings: Flow Matching vs DDPM
 
+![NFE Step Sweep Comparison](assets/nfe_comparison_grid.png)
+
+*Figure 1: Side-by-side comparison across 10 classes and matching NFE budgets [5, 10, 20, 50, 100]. Rows compare Flow Matching (Euler, Heun) against DDPM (DDIM) starting from identical initial noise latents.*
+
 | Dimension | Flow Matching (OT-Flow) | DDPM / DDIM | Why? |
 |---|---|---|---|
 | **Trajectory Geometry** | Straight-line paths connecting noise to data | Curved Brownian diffusion path | Flow matching targets constant velocity $u = x_1 - x_0$. |
