@@ -9,23 +9,14 @@
 
 ---
 
-## 📌 Project Status & Roadmap
+## 🌟 Core Capabilities & Key Highlights
 
-> [!NOTE]
-> **Status:** ✅ **Completed & Evaluated.** Both Flow Matching and DDPM have been implemented from first principles, verified via a deterministic 1-batch overfit test (99.9% loss drop), trained on MNIST, and benchmarked across matching NFEs [5, 10, 20, 50, 100].
-
-- [x] **DiT Backbone Architecture** (`src/flow_matching_ddpm/model.py`)
-- [x] **AdaLN-Zero Identity Initialization & 2D Positional Encodings**
-- [x] **Backbone Shape Unit Tests** (`tests/test_shapes.py`)
-- [x] **Flow Matching Velocity Loss** (`src/flow_matching_ddpm/loss.py`)
-- [x] **DDPM Noise Prediction Loss & Schedule Buffers** (`src/flow_matching_ddpm/loss.py`)
-- [x] **Euler & Heun Numerical ODE Solvers** (`src/flow_matching_ddpm/sampler.py`)
-- [x] **DDIM Deterministic Sampler with Uniform Schedule Respacing** (`src/flow_matching_ddpm/sampler.py`)
-- [x] **Batched Classifier-Free Guidance (CFG)** (`src/flow_matching_ddpm/sampler.py`)
-- [x] **Configurable Dataset Factory (MNIST, Fashion-MNIST, CIFAR-10, CelebA)** (`src/flow_matching_ddpm/dataset.py`)
-- [x] **Unified Training Pipeline with EMA & Grad Clipping** (`src/flow_matching_ddpm/train.py`)
-- [x] **Deterministic 1-Batch Overfit Verification Test (>99% drop)** (`tests/test_overfit.py`)
-- [x] **Side-by-Side NFE Step Sweep Benchmark (5, 10, 20, 50, 100 NFE)** (`src/flow_matching_ddpm/benchmark.py`)
+* **Shared Diffusion Transformer (DiT) Backbone:** Patch embedding with 2D sinusoidal position encodings and AdaLN-Zero identity initialization (1,259,024 parameters).
+* **Continuous Optimal Transport Flow Matching:** Regresses straight constant-velocity probability paths ($u = x_1 - x_0$) for rapid ODE integration.
+* **Discrete DDPM & Deterministic DDIM:** Discrete linear beta schedule with schedule buffers, continuous reparameterization loss, and uniform schedule-respaced DDIM sampling.
+* **1st & 2nd Order Numerical ODE Solvers:** Euler and Heun ODE integration for continuous flow trajectory solving.
+* **Batched Classifier-Free Guidance (CFG):** Evaluates conditional and unconditional null-class predictions simultaneously in a single forward pass.
+* **Rigorous Benchmark Suite:** Controlled side-by-side NFE comparison across matching initial noise latents and function evaluations [5, 10, 20, 50, 100].
 
 ---
 
